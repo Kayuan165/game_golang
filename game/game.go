@@ -1,6 +1,8 @@
 package game
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type Game struct {
 	player           *Player
@@ -18,10 +20,10 @@ func NewGame() *Game {
 	return g
 }
 
-//roda em 60 fps
+// roda em 60 fps
 // reponsavel por atualizar a logica do jogo
 // 60 vezes por segundo
-//1 tik = 1 frame
+// 1 tik = 1 frame
 func (g *Game) Update() error {
 	g.player.Update()
 
@@ -40,11 +42,30 @@ func (g *Game) Update() error {
 	for _, m := range g.meteors {
 		m.Update()
 	}
+
+	for _, m := range g.meteors {
+		if m.Collider().Intersects((g.player.Collider())) {
+			g.Reset()
+		}
+	}
+
+	for i, m := range g.meteors {
+
+		for j, l := range g.lasers {
+
+			if m.Collider().Intersects((l.Collider())) {
+				g.meteors = append(g.meteors[:i], g.meteors[i+1:]...)
+				g.lasers = append(g.lasers[:j], g.lasers[j+1:]...)
+
+			}
+		}
+	}
+
 	return nil
 }
 
 // responsavel por desenhar o jogo
-//roda 60 vezes por segundo
+// roda 60 vezes por segundo
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.player.Draw(screen)
 	for _, l := range g.lasers {
@@ -64,4 +85,11 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func (g *Game) Addlaser(laser *Laser) {
 	g.lasers = append(g.lasers, laser)
+}
+
+func (g *Game) Reset() {
+	g.player = NewPlayer(g)
+	g.meteors = nil
+	g.lasers = nil
+	g.meteorSpawnTimer.Reset()
 }
