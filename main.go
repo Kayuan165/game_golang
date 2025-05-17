@@ -1,28 +1,14 @@
 package main
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"my-game/game"
 
-type Game struct {
-}
-
-//reponsavel por atualizar a logica do jogo
-func (g *Game) Update() error {
-	return nil
-}
-
-//responsavel por desenhar o jogo
-func (g *Game) Draw(screen *ebiten.Image) {
-
-}
-
-//responsavel por definir o tamanho da tela
-func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return outsideWidth, outsideHeight
-}
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 func main() {
 
-	g := &Game{}
+	g := game.NewGame()
 
 	err := ebiten.RunGame(g)
 
