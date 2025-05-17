@@ -7,11 +7,13 @@ import (
 )
 
 type Player struct {
-	image    *ebiten.Image
-	position Vector
+	image             *ebiten.Image
+	position          Vector
+	game              *Game
+	laserLoadingTimer *Timer
 }
 
-func NewPlayer() *Player {
+func NewPlayer(game *Game) *Player {
 
 	image := assets.PlayerSprite
 	bounds := image.Bounds()
@@ -23,8 +25,10 @@ func NewPlayer() *Player {
 	}
 
 	return &Player{
-		image:    image,
-		position: position,
+		image:             image,
+		position:          position,
+		game:              game,
+		laserLoadingTimer: NewTimer(15),
 	}
 }
 
@@ -36,6 +40,23 @@ func (p *Player) Update() {
 		p.position.x -= speed
 	} else if ebiten.IsKeyPressed(ebiten.KeyRight) {
 		p.position.x += speed
+	}
+
+	p.laserLoadingTimer.Update()
+	if ebiten.IsKeyPressed(ebiten.KeySpace) && p.laserLoadingTimer.IsReady() {
+		p.laserLoadingTimer.Reset()
+		bounds := p.image.Bounds()
+		halfW := float64(bounds.Dx()) / 2
+		halfH := float64(bounds.Dy()) / 2
+
+		spawnPos := Vector{
+			p.position.x + halfW,
+			p.position.y - halfH/2,
+		}
+
+		laser := NewLaser(spawnPos)
+		p.game.Addlaser(laser)
+
 	}
 
 }
