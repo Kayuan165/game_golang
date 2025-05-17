@@ -28,7 +28,7 @@ func NewPlayer(game *Game) *Player {
 		image:             image,
 		position:          position,
 		game:              game,
-		laserLoadingTimer: NewTimer(15),
+		laserLoadingTimer: NewTimer(12),
 	}
 }
 
